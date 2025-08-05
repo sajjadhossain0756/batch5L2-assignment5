@@ -1,3 +1,4 @@
+import { Types } from "mongoose"
 
 export enum IsActive {
     ACTIVE = "ACTIVE",
@@ -17,6 +18,7 @@ export interface IAuthProvider {
 }
 
 export interface IUser {
+    _id?: Types.ObjectId,
     name: string,
     email: string,
     password?: string,
