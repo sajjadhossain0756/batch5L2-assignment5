@@ -25,6 +25,7 @@ const credentialsLogin = async (payload: Partial<IUser>) => {
     const userTokens = createUserToken(isUserExist);
 
     const { password: userPassword, ...rest } = isUserExist.toObject()
+    
     return {
         accessToken: userTokens.accessToken,
         refreshToken: userTokens.refreshToken,

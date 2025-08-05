@@ -4,6 +4,8 @@ import { TErrorSources } from "../interfaces/error.types";
 import { handleDuplicateError } from "../helpers/handleDuplicateError";
 import { handleZodError } from "../helpers/handleZodError";
 import { handleCastError } from "../helpers/handleCastError";
+import AppError from "../errorHelpers/AppError";
+import { handleValidationError } from "../helpers/handleValidationError";
 
 
 export const globalErrorHandler = async (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -26,12 +28,24 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message
     }
+    // 3.validation error
+    else if (err.name === "ValidationError") {
+        const simplifiedError = handleValidationError(err)
+        statusCode = simplifiedError.statusCode;
+        message = simplifiedError.message;
+        errorSources = simplifiedError.errorSources as TErrorSources[]
+    }
     // Zod error validation
     else if (err.name === "ZodError") {
         const simplifiedError = handleZodError(err)
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
         errorSources = simplifiedError.errorSources as TErrorSources[]
+    }
+    // Manual and default AppError validation
+    else if (err instanceof AppError) {
+        statusCode = err.statusCode
+        message = err.message
     }
     // JavaScript Error validation 
     else if (err instanceof Error) {
