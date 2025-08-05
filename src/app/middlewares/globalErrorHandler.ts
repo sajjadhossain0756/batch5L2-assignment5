@@ -3,6 +3,7 @@ import { envVars } from "../config/env";
 import { TErrorSources } from "../interfaces/error.types";
 import { handleDuplicateError } from "../helpers/handleDuplicateError";
 import { handleZodError } from "../helpers/handleZodError";
+import { handleCastError } from "../helpers/handleCastError";
 
 
 export const globalErrorHandler = async (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -16,6 +17,12 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
     // 1.duplicate error
     if (err.code === 11000) {
         const simplifiedError = handleDuplicateError(err)
+        statusCode = simplifiedError.statusCode;
+        message = simplifiedError.message
+    }
+    // 2.CastError 
+    else if (err.name === "CastError") {
+        const simplifiedError = handleCastError(err)
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message
     }
