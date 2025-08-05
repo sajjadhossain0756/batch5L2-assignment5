@@ -28,7 +28,7 @@ const userSchema = new Schema<IUser>({
         enum: Object.values(IsActive),
         default: IsActive.ACTIVE
     },
-    authProvider: [authProviderSchema]
+    auths: [authProviderSchema]
 
 },
     {

@@ -27,5 +27,5 @@ export interface IUser {
     isVerified?: boolean,
     isActive?: IsActive,
     role: Role,
-    authProvider: IAuthProvider[]
+    auths: IAuthProvider[]
 }
