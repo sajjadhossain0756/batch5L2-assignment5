@@ -5,24 +5,25 @@ import bcryptjs from "bcryptjs";
 
 
 const createUser = async (payload: Partial<IUser>) => {
-    const { email, password, ...rest } = payload;
 
-    const isUserExist = await User.findOne({ email });
-    if (isUserExist) {
-        throw new Error("User already exist")
-    }
+        const { email, password, ...rest } = payload;
 
-    const hashedPassword = await bcryptjs.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
+        const isUserExist = await User.findOne({ email });
+        // if (isUserExist) {
+        //     throw new Error("User already exist")
+        // }
 
-    const authProvider: IAuthProvider = { provider: "credentials", providerId: email as string }
-    const user = await User.create({
-        email,
-        password: hashedPassword,
-        auths: [authProvider],
-        ...rest
-    })
+        const hashedPassword = await bcryptjs.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
 
-    return user;
+        const authProvider: IAuthProvider = { provider: "credentials", providerId: email as string }
+        const user = await User.create({
+            email,
+            password: hashedPassword,
+            auths: [authProvider],
+            ...rest
+        })
+
+        return user;
 }
 
 export const UserServices = {
