@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { envVars } from "../config/env";
 import { TErrorSources } from "../interfaces/error.types";
 import { handleDuplicateError } from "../helpers/handleDuplicateError";
+import { handleZodError } from "../helpers/handleZodError";
 
 
 export const globalErrorHandler = async (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -17,6 +18,13 @@ export const globalErrorHandler = async (err: any, req: Request, res: Response, 
         const simplifiedError = handleDuplicateError(err)
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message
+    }
+    // Zod error validation
+    else if (err.name === "ZodError") {
+        const simplifiedError = handleZodError(err)
+        statusCode = simplifiedError.statusCode;
+        message = simplifiedError.message;
+        errorSources = simplifiedError.errorSources as TErrorSources[]
     }
     // JavaScript Error validation 
     else if (err instanceof Error) {
