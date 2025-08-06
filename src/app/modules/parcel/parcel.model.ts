@@ -44,7 +44,7 @@ const parcelSchema = new Schema<IParcel>({
         ref: "User",
         required: true
     },
-    totalCost: { type: Number, required: true, min: [0, "Cost can not be negative"] },
+    totalCost: { type: Number, min: [0, "Cost can not be negative"] },
     paymentStatus: {
         type: String,
         enum: Object.values(PaymentStatus),
@@ -61,6 +61,7 @@ parcelSchema.pre("save", async function (next) {
     if (this.isNew && !this.trackingNumber) {
         this.trackingNumber = `TRK-${Date.now()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
     }
+    this.totalCost = this.weight * 10;
     next();
 });
 
