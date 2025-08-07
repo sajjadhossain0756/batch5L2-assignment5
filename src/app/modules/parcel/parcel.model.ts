@@ -65,4 +65,10 @@ parcelSchema.pre("save", async function (next) {
     next();
 });
 
+parcelSchema.pre("findOneAndUpdate", async function (next) {
+    const parcel = this.getUpdate() as Partial<IParcel>
+    parcel.totalCost = parcel.weight as number * 10;
+    next();
+})
+
 export const Parcel = model<IParcel>('Parcel', parcelSchema);

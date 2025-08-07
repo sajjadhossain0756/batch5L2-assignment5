@@ -7,8 +7,10 @@ import { ParcelServices } from "./parcel.service";
 
 // create parcel start here;
 const createParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await ParcelServices.createParcel(req.body, req.user);
-    console.log(req.user);
+    const payload = req.body;
+    const loginUserToken = req.user;
+    const result = await ParcelServices.createParcel(payload, loginUserToken);
+
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
@@ -29,8 +31,25 @@ const getAllParcels = catchAsync(async (req: Request, res: Response, next: NextF
     })
 })
 
+// update parcel start here;
+const updateParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const parcelId = req.params.id;
+    const loginUserToken = req.user;
+    const payload = req.body
+
+    const result = await ParcelServices.updateParcel(parcelId, payload, loginUserToken);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Parcel updated successfully",
+        data: result
+    })
+})
+
 
 export const ParcelControllers = {
     createParcel,
-    getAllParcels
+    getAllParcels,
+    updateParcel
 }
