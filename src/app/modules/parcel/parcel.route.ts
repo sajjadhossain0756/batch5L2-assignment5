@@ -8,6 +8,12 @@ import { createParcelZodSchema } from "./parcel.validation";
 
 const router = Router();
 
+// get all parcel route
+router.get('/',
+    checkAuth(Role.ADMIN,Role.SENDER),
+    ParcelControllers.getAllParcels);
+
+// create parcel route
 router.post('/create', 
     checkAuth(Role.ADMIN,Role.SENDER),
     validationRequest(createParcelZodSchema),
