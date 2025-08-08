@@ -47,9 +47,25 @@ const updateParcel = catchAsync(async (req: Request, res: Response, next: NextFu
     })
 })
 
+// update parcel start here;
+const deleteParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const parcelId = req.params.id;
+    const loginUserToken = req.user;
+
+    const result = await ParcelServices.deleteParcel(parcelId,loginUserToken);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Parcel deleted successfully",
+        data: result
+    })
+})
+
 
 export const ParcelControllers = {
     createParcel,
     getAllParcels,
-    updateParcel
+    updateParcel,
+    deleteParcel
 }

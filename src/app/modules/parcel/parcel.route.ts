@@ -23,7 +23,12 @@ router.post('/create',
 router.patch('/:id', 
     checkAuth(Role.ADMIN,Role.SENDER),
     validationRequest(updateParcelZodSchema),
-    ParcelControllers.updateParcel);    
+    ParcelControllers.updateParcel);
+
+// delete parcel route
+router.delete('/:id', 
+    checkAuth(Role.ADMIN),
+    ParcelControllers.deleteParcel);    
 
 
 export const ParcelRoutes = router;

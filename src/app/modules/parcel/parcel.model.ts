@@ -3,11 +3,11 @@ import { IContactInfo, IParcel, ParcelStatus, ParcelTypes, PaymentStatus } from 
 
 
 const contactInfoSchema = new Schema<IContactInfo>({
-    name: { type: String, trim: true, required: true },
-    phone: { type: Number, required: true, trim: true },
+    name: { type: String, trim: true},
+    phone: { type: Number,trim: true },
     email: { type: String, trim: true, lowercase: true, match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address.'] },
-    address: { type: String, trim: true, required: true },
-    city: { type: String, trim: true, required: true }
+    address: { type: String, trim: true },
+    city: { type: String, trim: true}
 }, {
     _id: false,
     versionKey: false
@@ -29,8 +29,8 @@ const parcelSchema = new Schema<IParcel>({
         min: [0.01, "weight must be positive number"]
     },
     description: { type: String, trim: true },
-    sender: { type: contactInfoSchema, required: true },
-    receiver: { type: contactInfoSchema, required: true },
+    sender: { type: contactInfoSchema},
+    receiver: { type: contactInfoSchema },
     pickDate: { type: Date },
     deliveryDate: { type: Date },
     status: {
@@ -66,8 +66,15 @@ parcelSchema.pre("save", async function (next) {
 });
 
 parcelSchema.pre("findOneAndUpdate", async function (next) {
-    const parcel = this.getUpdate() as Partial<IParcel>
-    parcel.totalCost = parcel.weight as number * 10;
+    const update = this.getUpdate() as Record<string, any>;
+    
+    if (update.$set && update.$set.weight !== undefined) {
+        const newWeight = update.$set.weight as number;
+        update.$set.totalCost = newWeight * 10; 
+    } else if (update.weight !== undefined) { 
+        const newWeight = update.weight as number;
+        update.totalCost = newWeight * 10;
+    }
     next();
 })
 

@@ -1,6 +1,9 @@
 import AppError from "../../errorHelpers/AppError";
-import { IParcel } from "./parcel.interface";
+import updateInnerObjectField from "../../utils/updateInnerObject";
+import { Role } from "../user/user.interface";
+import { IParcel, ParcelStatus } from "./parcel.interface";
 import { Parcel } from "./parcel.model";
+import httpStatus from "http-status-codes";
 
 
 // create parcel start here;
@@ -38,7 +41,7 @@ const getAllParcels = async (loginUser: any) => {
     }
 }
 
-// create parcel start here;
+// update parcel start here;
 const updateParcel = async (id: string, payload: IParcel, loginUser: any) => {
 
     const existParcel = await Parcel.findById(id);
@@ -49,14 +52,40 @@ const updateParcel = async (id: string, payload: IParcel, loginUser: any) => {
     if(payload?.sender?.email){
         payload.sender.email = loginUser.email;
     }
+    if (payload.status === ParcelStatus.DISPATCHED  || payload.status === ParcelStatus.IN_TRANSITE || payload.status === ParcelStatus.DELIVERED) {
+        if (loginUser.role === Role.SENDER || loginUser.role === Role.RECEIVER) {
+            throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
+        }
+    }
+    if(payload.status === ParcelStatus.CANCELLED){
+        if(loginUser.role === Role.SENDER ){
+            if(existParcel.status === ParcelStatus.DISPATCHED){
+              throw new AppError(httpStatus.FORBIDDEN, "Cannot cancel parcel: It has already been dispatched.");
+            }
+        }
+    }
+ 
+    const updateDoc = updateInnerObjectField(payload);
 
-    const updateParcel = await Parcel.findByIdAndUpdate(id, payload, { new: true, runValidators: true });
+
+    const updateParcel = await Parcel.findByIdAndUpdate(id, {$set: updateDoc}, { new: true, runValidators: true });
 
     return updateParcel;
+}
+
+// delete parcel start here;
+const deleteParcel = async (id: string,loginUser: any) => {
+
+    if (loginUser.role === Role.SENDER || loginUser.role === Role.RECEIVER) {
+        throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
+    }
+    await Parcel.findByIdAndDelete(id);
+    return null;
 }
 
 export const ParcelServices = {
     createParcel,
     getAllParcels,
-    updateParcel
+    updateParcel,
+    deleteParcel
 }
