@@ -75,7 +75,10 @@ const updateParcel = async (id: string, payload: IParcel, loginUser: any) => {
 
 // delete parcel start here;
 const deleteParcel = async (id: string,loginUser: any) => {
-
+    const existParcel = await Parcel.findById(id);
+    if(!existParcel){
+        throw new AppError(401, "Parcel with this id not exists.");
+    }
     if (loginUser.role === Role.SENDER || loginUser.role === Role.RECEIVER) {
         throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
     }

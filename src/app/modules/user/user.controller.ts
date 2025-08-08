@@ -47,9 +47,25 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
     })
 })
 
+// deleteUser function
+const deleteUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+    const verifiedToken = req.user;
+
+    const user = await UserServices.deleteUser(userId, verifiedToken as JwtPayload);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        message: `User deleted Successfully`,
+        success: true,
+        data: user
+    })
+})
+
 
 export const UserControllers = {
     createUser,
     getAllUsers,
-    updateUser
+    updateUser,
+    deleteUser
 }

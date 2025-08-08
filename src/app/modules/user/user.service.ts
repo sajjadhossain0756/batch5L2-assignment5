@@ -61,7 +61,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
         if (decodedToken.role === Role.SENDER || decodedToken.role === Role.RECEIVER) {
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
         }
-    }
+    } 
     if (payload.password) {
         payload.password = await bcryptjs.hash(payload.password, envVars.BCRYPT_SALT_ROUND)
     }
@@ -71,8 +71,22 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
     return newUpdatedUser
 }
 
+// delete user start here;
+const deleteUser = async (id: string,loginUser: any) => {
+    const existParcel = await User.findById(id);
+    if(!existParcel){
+        throw new AppError(401, "User with this id not exists.");
+    }
+    if (loginUser.role === Role.SENDER || loginUser.role === Role.RECEIVER) {
+        throw new AppError(httpStatus.FORBIDDEN, "You are not authorized for delete User!!")
+    }
+    await User.findByIdAndDelete(id);
+    return null;
+}
+
 export const UserServices = {
     createUser,
     getAllUsers,
-    updateUser
+    updateUser,
+    deleteUser
 }
