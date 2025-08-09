@@ -21,7 +21,9 @@ const createParcel = catchAsync(async (req: Request, res: Response, next: NextFu
 
 // get all parcel start here;
 const getAllParcels = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const result = await ParcelServices.getAllParcels(req.user);
+
+    const query = req.query;
+    const result = await ParcelServices.getAllParcels(req.user, query as Record<string,string>);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -52,7 +54,7 @@ const deleteParcel = catchAsync(async (req: Request, res: Response, next: NextFu
     const parcelId = req.params.id;
     const loginUserToken = req.user;
 
-    const result = await ParcelServices.deleteParcel(parcelId,loginUserToken);
+    const result = await ParcelServices.deleteParcel(parcelId, loginUserToken);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
