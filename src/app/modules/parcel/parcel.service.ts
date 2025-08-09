@@ -25,12 +25,15 @@ const getAllParcels = async (loginUser: any) => {
     let totalParcel
 
     console.log(loginUser)
-    if (loginUser.role === 'ADMIN') {
+    if (loginUser.role === Role.ADMIN) {
         parcel = await Parcel.find({});
         totalParcel = await Parcel.countDocuments();
-    } else {
+    } else if(loginUser.role === Role.SENDER) {
         parcel = await Parcel.find({ 'sender.email': loginUser.email });
         totalParcel = await Parcel.countDocuments({ 'sender.email': loginUser.email });
+    }else{
+        parcel = await Parcel.find({ 'receiver.email': loginUser.email });
+        totalParcel = await Parcel.countDocuments({ 'receiver.email': loginUser.email });
     }
 
     return {
@@ -53,7 +56,7 @@ const updateParcel = async (id: string, payload: IParcel, loginUser: any) => {
         payload.sender.email = loginUser.email;
     }
     if (payload.status === ParcelStatus.DISPATCHED  || payload.status === ParcelStatus.IN_TRANSITE || payload.status === ParcelStatus.DELIVERED) {
-        if (loginUser.role === Role.SENDER || loginUser.role === Role.RECEIVER) {
+        if (loginUser.role === Role.SENDER ) {
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
         }
     }
@@ -63,6 +66,27 @@ const updateParcel = async (id: string, payload: IParcel, loginUser: any) => {
               throw new AppError(httpStatus.FORBIDDEN, "Cannot cancel parcel: It has already been dispatched.");
             }
         }
+    }
+    // Role === receiver,User only Update status field with value dilivered;
+    if (loginUser.role === Role.RECEIVER) {
+        
+        const allowedUpdateFields = ['status']; 
+
+        const incomingKeys = Object.keys(payload);
+        const unauthorizedUpdates = incomingKeys.filter(key => !allowedUpdateFields.includes(key));
+
+        if (unauthorizedUpdates.length > 0) {
+            throw new AppError(
+                httpStatus.FORBIDDEN,
+                `As a Receiver, you can only update the 'status' field. Unauthorized fields: ${unauthorizedUpdates.join(', ')}`
+            );
+        }
+
+        if (payload.status !== undefined && payload.status !== ParcelStatus.DELIVERED) {
+            throw new AppError(httpStatus.FORBIDDEN, "As a Receiver, you can only set the parcel status to 'DELIVERED'.");
+        }
+        const isRecipient = existParcel.receiver.email === loginUser.email 
+        if (!isRecipient) { throw new AppError(httpStatus.FORBIDDEN, "You are not the recipient of this parcel."); }
     }
  
     const updateDoc = updateInnerObjectField(payload);

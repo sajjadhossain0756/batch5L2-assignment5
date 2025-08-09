@@ -13,9 +13,9 @@ const createUser = async (payload: Partial<IUser>) => {
         const { email, password, ...rest } = payload;
 
         const isUserExist = await User.findOne({ email });
-        // if (isUserExist) {
-        //     throw new Error("User already exist")
-        // }
+        if (isUserExist) {
+            throw new Error("User already exist")
+        }
 
         const hashedPassword = await bcryptjs.hash(password as string, Number(envVars.BCRYPT_SALT_ROUND))
 

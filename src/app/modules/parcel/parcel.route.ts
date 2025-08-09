@@ -10,7 +10,7 @@ const router = Router();
 
 // get all parcel route
 router.get('/',
-    checkAuth(Role.ADMIN,Role.SENDER),
+    checkAuth(Role.ADMIN,Role.SENDER,Role.RECEIVER),
     ParcelControllers.getAllParcels);
 
 // create parcel route
@@ -21,7 +21,7 @@ router.post('/create',
  
 // create parcel route
 router.patch('/:id', 
-    checkAuth(Role.ADMIN,Role.SENDER),
+    checkAuth(Role.ADMIN,Role.SENDER,Role.RECEIVER),
     validationRequest(updateParcelZodSchema),
     ParcelControllers.updateParcel);
 
