@@ -1,3 +1,4 @@
+import { excludeField } from "../../constant";
 import AppError from "../../errorHelpers/AppError";
 import updateInnerObjectField from "../../utils/updateInnerObject";
 import { Role } from "../user/user.interface";
@@ -24,8 +25,13 @@ const getAllParcels = async (loginUser: any, query: Record<string, string>) => {
     
     const filter = query;
     const searchTerm = query.searchTerm || "";
+    const sort = query.sort || "-createdAt";
+    const fields = query.fields.split(",").join(" ") || "";
 
-    delete filter["searchTerm"]
+
+    for(const field of excludeField){
+        delete filter[field]
+    }
     const searchQuery = {
         $or: parcelSearchableFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
     }
@@ -34,7 +40,7 @@ const getAllParcels = async (loginUser: any, query: Record<string, string>) => {
     console.log(filter,searchTerm,query);
     // console.log(loginUser)
     if (loginUser.role === Role.ADMIN) {
-        parcel = await Parcel.find(searchQuery).find(filter);
+        parcel = await Parcel.find(searchQuery).find(filter).sort(sort).select(fields);
         totalParcel = await Parcel.countDocuments(searchQuery).countDocuments(filter);
     } else if (loginUser.role === Role.SENDER) {
         parcel = await Parcel.find({ 'sender.email': loginUser.email });
