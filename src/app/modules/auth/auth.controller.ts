@@ -4,6 +4,7 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from "http-status-codes";
 import { AuthServices } from "./auth.service";
 import { setAuthCookie } from "./setCookie";
+import { JwtPayload } from "jsonwebtoken";
 
 
 const credentialsLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -62,7 +63,26 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
     })
 })
 
+// reset password controller function start here;
+const resetPassword = catchAsync(async (req: Request, res: Response) => {
+
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user;
+
+    await AuthServices.resetPassword(oldPassword, newPassword, decodedToken as JwtPayload)
+
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        message: `Password change successfully`,
+        success: true,
+        data: null,
+    })
+})
+
 export const AuthControllers = {
     credentialsLogin,
-    logout
+    logout,
+    resetPassword
 }
