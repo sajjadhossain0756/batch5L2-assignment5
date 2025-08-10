@@ -31,7 +31,8 @@ const createParcel = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(
 }));
 // get all parcel start here;
 const getAllParcels = (0, catchAsync_1.catchAsync)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield parcel_service_1.ParcelServices.getAllParcels(req.user);
+    const query = req.query;
+    const result = yield parcel_service_1.ParcelServices.getAllParcels(req.user, query);
     (0, sendResponse_1.sendResponse)(res, {
         statusCode: http_status_codes_1.default.OK,
         success: true,

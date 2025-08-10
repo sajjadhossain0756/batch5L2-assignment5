@@ -16,6 +16,7 @@ exports.ParcelServices = void 0;
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
 const updateInnerObject_1 = __importDefault(require("../../utils/updateInnerObject"));
 const user_interface_1 = require("../user/user.interface");
+const parcel_constant_1 = require("./parcel.constant");
 const parcel_interface_1 = require("./parcel.interface");
 const parcel_model_1 = require("./parcel.model");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
@@ -30,14 +31,20 @@ const createParcel = (payload, loginUser) => __awaiter(void 0, void 0, void 0, f
     return parcel;
 });
 // get all parcel start here;
-const getAllParcels = (loginUser) => __awaiter(void 0, void 0, void 0, function* () {
-    // const filter = query;
+const getAllParcels = (loginUser, query) => __awaiter(void 0, void 0, void 0, function* () {
+    const filter = query;
+    const searchTerm = query.searchTerm || "";
+    delete filter["searchTerm"];
+    const searchQuery = {
+        $or: parcel_constant_1.parcelSearchableFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
+    };
     let parcel;
     let totalParcel;
-    console.log(loginUser);
+    console.log(filter, searchTerm, query);
+    // console.log(loginUser)
     if (loginUser.role === user_interface_1.Role.ADMIN) {
-        parcel = yield parcel_model_1.Parcel.find({});
-        totalParcel = yield parcel_model_1.Parcel.countDocuments();
+        parcel = yield parcel_model_1.Parcel.find(searchQuery).find(filter);
+        totalParcel = yield parcel_model_1.Parcel.countDocuments(searchQuery).countDocuments(filter);
     }
     else if (loginUser.role === user_interface_1.Role.SENDER) {
         parcel = yield parcel_model_1.Parcel.find({ 'sender.email': loginUser.email });

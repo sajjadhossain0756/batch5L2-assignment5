@@ -34,9 +34,9 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const createUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload, rest = __rest(payload, ["email", "password"]);
     const isUserExist = yield user_model_1.User.findOne({ email });
-    // if (isUserExist) {
-    //     throw new Error("User already exist")
-    // }
+    if (isUserExist) {
+        throw new Error("User already exist");
+    }
     const hashedPassword = yield bcryptjs_1.default.hash(password, Number(env_1.envVars.BCRYPT_SALT_ROUND));
     const authProvider = { provider: "credentials", providerId: email };
     const user = yield user_model_1.User.create(Object.assign({ email, password: hashedPassword, auths: [authProvider] }, rest));

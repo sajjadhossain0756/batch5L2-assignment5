@@ -29,6 +29,7 @@ const http_status_codes_1 = __importDefault(require("http-status-codes"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const userToken_1 = require("../../utils/userToken");
 const AppError_1 = __importDefault(require("../../errorHelpers/AppError"));
+const env_1 = require("../../config/env");
 // manually email and password login it replaced by passport-local login
 const credentialsLogin = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = payload;
@@ -48,6 +49,29 @@ const credentialsLogin = (payload) => __awaiter(void 0, void 0, void 0, function
         user: rest
     };
 });
+// reset password fanctionality start here;
+const resetPassword = (oldPassword, newPassword, decodedToken) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById(decodedToken.userId);
+    if (!user) {
+        throw new AppError_1.default(http_status_codes_1.default.NOT_FOUND, "User not found.");
+    }
+    // new password validation start here;
+    const passwordValidationRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]).{8,}$/;
+    if (!passwordValidationRegex.test(newPassword)) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "New password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character.");
+    }
+    const isOldPasswordMatch = yield bcryptjs_1.default.compare(oldPassword, user.password);
+    if (!isOldPasswordMatch) {
+        throw new AppError_1.default(http_status_codes_1.default.UNAUTHORIZED, "old password does not match");
+    }
+    const isNewPasswordSameAsOld = yield bcryptjs_1.default.compare(newPassword, user.password);
+    if (isNewPasswordSameAsOld) {
+        throw new AppError_1.default(http_status_codes_1.default.BAD_REQUEST, "New password cannot be the same as the old password.");
+    }
+    user.password = yield bcryptjs_1.default.hash(newPassword, Number(env_1.envVars.BCRYPT_SALT_ROUND));
+    user.save();
+});
 exports.AuthServices = {
-    credentialsLogin
+    credentialsLogin,
+    resetPassword
 };
