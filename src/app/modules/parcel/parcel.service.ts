@@ -1,3 +1,4 @@
+import { Query } from "mongoose";
 import { excludeField } from "../../constant";
 import AppError from "../../errorHelpers/AppError";
 import updateInnerObjectField from "../../utils/updateInnerObject";
@@ -6,6 +7,7 @@ import { parcelSearchableFields } from "./parcel.constant";
 import { IParcel, ParcelStatus } from "./parcel.interface";
 import { Parcel } from "./parcel.model";
 import httpStatus from "http-status-codes";
+import { QueryBuilder } from "../../utils/queryBuilder";
 
 
 // create parcel start here;
@@ -20,40 +22,90 @@ const createParcel = async (payload: IParcel, loginUser: any) => {
     return parcel
 }
 
+// const getAllParcels = async (loginUser: any, query: Record<string, string>) => {
+
+//     const filter = query;
+//     const searchTerm = query.searchTerm || "";
+//     const sort = query.sort || "-createdAt";
+//     const fields = query.fields?.split(",").join(" ") || "";
+//     const page = Number(query.page) || 1;
+//     const limit = Number(query.limit) || 10;
+//     const skip = (page - 1) * 1;
+
+
+//     for(const field of excludeField){
+//         delete filter[field]
+//     }
+//     const searchQuery = {
+//         $or: parcelSearchableFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
+//     }
+//     let parcel;
+//     let totalParcel
+//     console.log(filter,searchTerm,query);
+//     // console.log(loginUser)
+//     if (loginUser.role === Role.ADMIN) {
+//         parcel = await Parcel.find(searchQuery).find(filter).sort(sort).select(fields).skip(skip).limit(limit);
+//         totalParcel = await Parcel.countDocuments(searchQuery).countDocuments(filter);
+
+//         // you can write this type:
+//         // const filterQuery = Parcel.find(filter);
+//         // const parcels = filterQuery.find(searchQuery)
+//         // const allParcels = await parcels.sort(sort).select(fields).skip(skip).limit(limit);
+
+//     } else if (loginUser.role === Role.SENDER) {
+//         parcel = await Parcel.find({ 'sender.email': loginUser.email });
+//         totalParcel = await Parcel.countDocuments({ 'sender.email': loginUser.email });
+//     } else {
+//         parcel = await Parcel.find({ 'receiver.email': loginUser.email });
+//         totalParcel = await Parcel.countDocuments({ 'receiver.email': loginUser.email });
+//     }
+
+//     const totalPage = Math.ceil(totalParcel / limit);
+
+//     const metaData = {
+//         page: page,
+//         limit: limit,
+//         totalParcel: totalParcel,
+//         totalPage: totalPage
+//     }
+
+//     return {
+//         meta: metaData,
+//         data: parcel
+//     }
+// }
+
 // get all parcel start here;
 const getAllParcels = async (loginUser: any, query: Record<string, string>) => {
-    
-    const filter = query;
-    const searchTerm = query.searchTerm || "";
-    const sort = query.sort || "-createdAt";
-    const fields = query.fields.split(",").join(" ") || "";
 
-
-    for(const field of excludeField){
-        delete filter[field]
-    }
-    const searchQuery = {
-        $or: parcelSearchableFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
-    }
     let parcel;
-    let totalParcel
-    console.log(filter,searchTerm,query);
+    let meta;
+
+    const queryBuilder = new QueryBuilder(Parcel.find(), query);
+
     // console.log(loginUser)
     if (loginUser.role === Role.ADMIN) {
-        parcel = await Parcel.find(searchQuery).find(filter).sort(sort).select(fields);
-        totalParcel = await Parcel.countDocuments(searchQuery).countDocuments(filter);
-    } else if (loginUser.role === Role.SENDER) {
-        parcel = await Parcel.find({ 'sender.email': loginUser.email });
-        totalParcel = await Parcel.countDocuments({ 'sender.email': loginUser.email });
-    } else {
-        parcel = await Parcel.find({ 'receiver.email': loginUser.email });
-        totalParcel = await Parcel.countDocuments({ 'receiver.email': loginUser.email });
+        parcel = await queryBuilder
+            .search(parcelSearchableFields)
+            .filter()
+            .fields()
+            .sort()
+            .paginate()
+            .build();
+        meta = await queryBuilder
+            .getMeta()
     }
+    //  else if (loginUser.role === Role.SENDER) {
+    //     parcel = await Parcel.find({ 'sender.email': loginUser.email });
+    //     totalParcel = await Parcel.countDocuments({ 'sender.email': loginUser.email });
+    // } else {
+    //     parcel = await Parcel.find({ 'receiver.email': loginUser.email });
+    //     totalParcel = await Parcel.countDocuments({ 'receiver.email': loginUser.email });
+    // }
+
 
     return {
-        meta: {
-            total: totalParcel
-        },
+        meta: meta,
         data: parcel
     }
 }
