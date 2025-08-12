@@ -13,62 +13,62 @@ delivered only.A sender can cancel their parcel until the parcel status will be 
 
 ## ✨ Features
 
-* # User Management:
+* ## User Management:
 
-* User Registration & Authentication: Secure email/password and Google OAuth 2.0 sign-up/login.Default
+* **User Registration & Authentication:** Secure email/password and Google OAuth 2.0 sign-up/login.Default
  a user Role will be Sender.If he want to be a receiver role, he can update their Role.
 
-* Password Management: Reset password functionality.
+* **Password Management:** Reset password functionality.
 
-* Profile Management: Users can manage their own profiles.
+* **Profile Management:** Users can manage their own profiles.
 
-* Role-Based Access Control (RBAC): Differentiated permissions for various user types.
+* **Role-Based Access Control (RBAC):** Differentiated permissions for various user types.
 
-* # Parcel Management:
+* ## Parcel Management:
 
-* Create Parcels: Senders can create new delivery orders with detailed information.
+* **Create Parcels:** Senders can create new delivery orders with detailed information.
 
-* Parcel Tracking: Real-time updates on parcel status (e.g., REQUESTED, PICKED_UP, IN_TRANSIT, DELIVERED, CANCELLED).
+* **Parcel Tracking:** Real-time updates on parcel status (e.g., REQUESTED, PICKED_UP, IN_TRANSIT, DELIVERED, CANCELLED).
 
-* # View Parcels:
+* ## View Parcels:
 
-* Admin/Dispatcher: View all parcels.
+* **Admin/Dispatcher:** View all parcels.
 
-* Sender: View only parcels they have sent.
+* **Sender:** View only parcels they have sent.
 
-* Receiver: View only parcels addressed to them.
-
-
-* # Update Parcels:
-
-* Admin/Dispatcher: Full control over all parcel fields and statuses.
+* **Receiver:** View only parcels addressed to them.
 
 
-* Sender: Cancel pending parcels (with restrictions if already dispatched).
+* ## Update Parcels:
 
-* Receiver: Mark parcel as DELIVERED (for their own parcels).
+* **Admin/Dispatcher:** Full control over all parcel fields and statuses.
 
-* # Delete Parcels: Admin/Dispatcher only.
+
+* **Sender:** Cancel pending parcels (with restrictions if already dispatched).
+
+* **Receiver:** Mark parcel as DELIVERED (for their own parcels).
+
+* ## Delete Parcels: Admin/Dispatcher only.
 
 ## 🚀 Technologies Used
 
-* Backend Framework: Node.js with Express.js
+* **Backend Framework:** Node.js with Express.js
 
-* Database: MongoDB
+* **Database:** MongoDB
 
-* ORM: Mongoose
+* **ORM:** Mongoose
 
-* Authentication: Passport.js (Local Strategy, Google OAuth2.0 Strategy)
+* **Authentication:** Passport.js (Local Strategy, Google OAuth2.0 Strategy)
 
-* Password Hashing: bcryptjs
+* **Password Hashing:** bcryptjs
 
-* Validation: Zod
+* **Validation:** Zod
 
-* Environment Variables: dotenv
+* **Environment Variables:** dotenv
 
-* Deployment: Vercel
+* **Deployment:** Vercel
 
-* TypeScript: A superset of JavaScript that adds static typing.
+* **TypeScript:** A superset of JavaScript that adds static typing.
 
 
 ## 🛠️ Getting Started
@@ -80,7 +80,16 @@ Follow these steps to set up and run the project locally.
 * MongoDB Atlas Account (for a cloud database) or local MongoDB instance
 * Google Cloud Project (for Google OAuth)
 
-### 1. Clone the Repository
+### Installation
+
+### 1. Clone the Repository:
 ```bash
-git clone https://github.com/sajjadhossain0756/batch5L2-assignment4.git
-cd batch5L2-assignment4
+git clone https://github.com/sajjadhossain0756/batch5L2-assignment5.git
+cd batch5L2-assignment5 # or your project directory name
+```
+### 2. Install dependencies:
+```bash
+npm install
+# OR
+yarn install
+```
