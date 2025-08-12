@@ -9,7 +9,7 @@ parcel which are booked for him/her.When he will get parcel in his hand,then he 
 delivered only.A sender can cancel their parcel until the parcel status will be dispatched.
 
 ## Project live link:
-* https://batch5-l2-assignment4-gpe6.vercel.app/
+* https://batch5-l2-assignment5.vercel.app
 
 ## ✨ Features
 
@@ -93,3 +93,114 @@ npm install
 # OR
 yarn install
 ```
+### 3. **Create a** .env **file:**
+Create a file named .env in the root of your project and add the following environment variables. Replace the placeholder values with your actual credentials
+```bash
+PORT=yourPort
+DATABASE_URL=mongodb+srv://<your_mongo_user>:<your_mongo_password>@<your_cluster_url>/<your_database_name>?retryWrites=true&w=majority
+#JWT
+BCRYPT_SALT_ROUND=yourRoundNumber
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRES_IN=yourExpiresIn
+# google cloud 
+GOOGLE_CLIENT_ID=your_google_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=youCallbackURL
+# frontend url
+FRONTEND_URL=yourFrontendURL
+
+```
+* **MongoDB Atlas:** Ensure your database user has the correct permissions and your current IP address is whitelisted in MongoDB Atlas Network Access.
+
+* **Google OAuth:** Make sure http://localhost:5000/api/v1/auth/google/callback is added as an **Authorized redirect URI** for your Web Application Client ID in your Google Cloud Console.
+
+### Running the Project
+To start the development server:
+
+```bash
+npm run dev
+# OR
+yarn dev
+```
+The server will typically run on http://localhost:yourPort.
+
+## 📋 API Endpoints
+Here are some example API endpoints. Replace http://localhost:yourPortNumber/api/v1 with your actual base URL.
+
+### Authentication & Users
+* ```bash POST /api/v1/auth/register```
+
+   * **Description:** Register a new user with email and password.
+
+   * **Body:**
+```bash
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "password": "StrongPassword123!"
+}
+```
+* ```bash POST /api/v1/auth/login```
+
+   * **Description:** Log in a user with email and password.
+
+   * **Body:**
+```bash
+ {
+  "email": "john.doe@example.com",
+  "password": "StrongPassword123!"
+ }
+```
+* ```bash GET /api/v1/auth/google```
+
+  * **Description:** Initiate Google OAuth login.
+
+* ```bash GET /api/v1/auth/google/callback```
+
+  * **Description:** Google OAuth callback URL (handled by Passport.js).
+
+* ```bash PATCH /api/v1/users/reset-password```
+
+  * **Description:** Reset a user's password. (Requires authentication, send token in headers)
+  * **Body:**
+```bash
+ {
+  "oldPassword": "CurrentPassword123!",
+  "newPassword": "NewStrongPassword456!"
+ }
+```  
+* ```bash PATCH /api/v1/users/:id```
+
+  * **Description:** Update user details (requires authentication and authorization).
+
+  * **Body:** Partial<IUser> data.
+
+* ```bash GET /api/v1/users```
+
+  * **Description:** Get all users (Admin/Super Admin only).
+
+### Parcel Management
+* ```bash POST /api/v1/parcels```
+
+* **Description:** Create a new parcel delivery order.
+
+* **Body:** IParcel data (refer to parcel.interface.ts for structure).
+
+* ```bash GET /api/v1/parcels```
+
+* **Description:** Get all parcels (filtered by user role).
+
+* ```bash GET /api/v1/parcels/:id```
+
+* **Description:** Get a single parcel by ID.
+
+* ```bash PATCH /api/v1/parcels/:id```
+
+* **Description:** Update parcel details (authorization based on role/fields).
+
+* **Body:** Partial<IParcel> data.
+
+* ```bash DELETE /api/v1/parcels/:id```
+
+* **Description:** Delete a parcel (Admin/Dispatcher only).
+
