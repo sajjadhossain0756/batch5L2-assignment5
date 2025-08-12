@@ -20,6 +20,7 @@ const parcel_constant_1 = require("./parcel.constant");
 const parcel_interface_1 = require("./parcel.interface");
 const parcel_model_1 = require("./parcel.model");
 const http_status_codes_1 = __importDefault(require("http-status-codes"));
+const queryBuilder_1 = require("../../utils/queryBuilder");
 // create parcel start here;
 const createParcel = (payload, loginUser) => __awaiter(void 0, void 0, void 0, function* () {
     const existParcel = yield parcel_model_1.Parcel.findOne({ trackingNumber: payload.trackingNumber });
@@ -32,32 +33,39 @@ const createParcel = (payload, loginUser) => __awaiter(void 0, void 0, void 0, f
 });
 // get all parcel start here;
 const getAllParcels = (loginUser, query) => __awaiter(void 0, void 0, void 0, function* () {
-    const filter = query;
-    const searchTerm = query.searchTerm || "";
-    delete filter["searchTerm"];
-    const searchQuery = {
-        $or: parcel_constant_1.parcelSearchableFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
-    };
     let parcel;
-    let totalParcel;
-    console.log(filter, searchTerm, query);
-    // console.log(loginUser)
+    let meta;
+    const queryBuilder = new queryBuilder_1.QueryBuilder(parcel_model_1.Parcel.find(), query);
+    console.log(loginUser);
     if (loginUser.role === user_interface_1.Role.ADMIN) {
-        parcel = yield parcel_model_1.Parcel.find(searchQuery).find(filter);
-        totalParcel = yield parcel_model_1.Parcel.countDocuments(searchQuery).countDocuments(filter);
+        parcel = yield queryBuilder
+            .search(parcel_constant_1.parcelSearchableFields)
+            .filter()
+            .fields()
+            .sort()
+            .paginate()
+            .build();
+        meta = yield queryBuilder
+            .getMeta();
     }
     else if (loginUser.role === user_interface_1.Role.SENDER) {
-        parcel = yield parcel_model_1.Parcel.find({ 'sender.email': loginUser.email });
-        totalParcel = yield parcel_model_1.Parcel.countDocuments({ 'sender.email': loginUser.email });
+        parcel = yield yield queryBuilder
+            .findDataWithRole(loginUser)
+            .search(parcel_constant_1.parcelSearchableFields)
+            .filter()
+            .fields()
+            .sort()
+            .paginate()
+            .build();
+        meta = yield queryBuilder
+            .getMetaWithRole(loginUser);
     }
-    else {
-        parcel = yield parcel_model_1.Parcel.find({ 'receiver.email': loginUser.email });
-        totalParcel = yield parcel_model_1.Parcel.countDocuments({ 'receiver.email': loginUser.email });
-    }
+    //  else {
+    //     parcel = await Parcel.find({ 'receiver.email': loginUser.email });
+    //     totalParcel = await Parcel.countDocuments({ 'receiver.email': loginUser.email });
+    // }
     return {
-        meta: {
-            total: totalParcel
-        },
+        meta: meta,
         data: parcel
     };
 });

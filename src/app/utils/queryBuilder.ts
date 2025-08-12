@@ -25,8 +25,14 @@ export class QueryBuilder<T> {
         return this;
     }
 
-    findDataWithRole(loginUser: any){
+    findDataWithRoleSender(loginUser: any){
         this.modelQuery = this.modelQuery.find({'sender.email': loginUser.email});
+
+        return this;
+    }
+
+    findDataWithRoleReceiver(loginUser: any){
+        this.modelQuery = this.modelQuery.find({'receiver.email': loginUser.email});
 
         return this;
     }
@@ -88,8 +94,20 @@ export class QueryBuilder<T> {
 
     }
 
-    async getMetaWithRole(loginUser:any) {
+    async getMetaWithRoleSender(loginUser:any) {
         const totalDocuments = await this.modelQuery.model.countDocuments({ 'sender.email': loginUser.email });
+
+        const page = Number(this.query.page) || 1;
+        const limit = Number(this.query.limit) || 10;
+
+        const totalPage = Math.ceil(totalDocuments / limit);
+
+        return { page, limit, total: totalDocuments, totalPage }
+
+    }
+
+    async getMetaWithRoleReceiver(loginUser:any) {
+        const totalDocuments = await this.modelQuery.model.countDocuments({ 'receiver.email': loginUser.email });
 
         const page = Number(this.query.page) || 1;
         const limit = Number(this.query.limit) || 10;

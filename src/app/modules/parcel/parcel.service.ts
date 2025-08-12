@@ -42,9 +42,9 @@ const getAllParcels = async (loginUser: any, query: Record<string, string>) => {
         meta = await queryBuilder
             .getMeta()
     }
-     else if (loginUser.role === Role.SENDER) {
+    else if (loginUser.role === Role.SENDER) {
         parcel = await await queryBuilder
-            .findDataWithRole(loginUser)
+            .findDataWithRoleSender(loginUser)
             .search(parcelSearchableFields)
             .filter()
             .fields()
@@ -52,17 +52,39 @@ const getAllParcels = async (loginUser: any, query: Record<string, string>) => {
             .paginate()
             .build();
         meta = await queryBuilder
-            .getMetaWithRole(loginUser)
+            .getMetaWithRoleSender(loginUser)
     }
-    //  else {
-    //     parcel = await Parcel.find({ 'receiver.email': loginUser.email });
-    //     totalParcel = await Parcel.countDocuments({ 'receiver.email': loginUser.email });
-    // }
+    else {
+        parcel = await await queryBuilder
+            .findDataWithRoleReceiver(loginUser)
+            .search(parcelSearchableFields)
+            .filter()
+            .fields()
+            .sort()
+            .paginate()
+            .build();
+        meta = await queryBuilder
+            .getMetaWithRoleReceiver(loginUser)
+    }
 
     return {
         meta: meta,
         data: parcel
     }
+}
+
+// update parcel start here;
+const getOneParcel = async (trackingNumber: string, loginUser: any) => {
+
+    const existParcel = await Parcel.findOne({ 'trackingNumber': trackingNumber });
+
+    if (!existParcel) {
+        throw new AppError(401, "A Parcel with this trackingNumber not exists.");
+    }
+    
+    const parcel = await Parcel.findOne({'trackingNumber': trackingNumber});
+    
+    return parcel;
 }
 
 // update parcel start here;
@@ -135,5 +157,6 @@ export const ParcelServices = {
     createParcel,
     getAllParcels,
     updateParcel,
+    getOneParcel,
     deleteParcel
 }

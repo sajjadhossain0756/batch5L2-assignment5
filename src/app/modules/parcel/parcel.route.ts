@@ -18,8 +18,13 @@ router.post('/create',
     checkAuth(Role.ADMIN,Role.SENDER),
     validationRequest(createParcelZodSchema),
     ParcelControllers.createParcel);
+
+// get one parcel by trackingNumber;
+router.get('/:trackingNumber', 
+    checkAuth(Role.ADMIN,Role.SENDER,Role.RECEIVER),
+    ParcelControllers.getOneParcel);    
  
-// create parcel route
+// update parcel route
 router.patch('/:id', 
     checkAuth(Role.ADMIN,Role.SENDER,Role.RECEIVER),
     validationRequest(updateParcelZodSchema),

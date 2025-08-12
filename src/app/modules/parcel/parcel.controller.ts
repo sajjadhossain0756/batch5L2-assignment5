@@ -33,6 +33,21 @@ const getAllParcels = catchAsync(async (req: Request, res: Response, next: NextF
     })
 })
 
+// get one parcel start here;
+const getOneParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const parcelTrackingNumber = req.params.trackingNumber;
+    const loginUserToken = req.user;
+
+    const result = await ParcelServices.getOneParcel(parcelTrackingNumber, loginUserToken);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Get one Parcel successfully",
+        data: result
+    })
+})
+
 // update parcel start here;
 const updateParcel = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const parcelId = req.params.id;
@@ -69,5 +84,6 @@ export const ParcelControllers = {
     createParcel,
     getAllParcels,
     updateParcel,
+    getOneParcel,
     deleteParcel
 }
