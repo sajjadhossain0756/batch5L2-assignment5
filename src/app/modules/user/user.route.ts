@@ -18,6 +18,11 @@ router.get("/all-users",
     checkAuth(Role.ADMIN), 
     UserControllers.getAllUsers);
 
+// get single User with id route;  
+router.get("/:id", 
+    checkAuth(Role.ADMIN), 
+    UserControllers.getSingleUser);    
+
 // update User route
 router.patch("/:id", 
     checkAuth(...Object.values(Role)), 

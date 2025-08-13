@@ -9,7 +9,7 @@ import { createParcelZodSchema, updateParcelZodSchema } from "./parcel.validatio
 const router = Router();
 
 // get all parcel route
-router.get('/',
+router.get('/all-parcels',
     checkAuth(Role.ADMIN,Role.SENDER,Role.RECEIVER),
     ParcelControllers.getAllParcels);
 

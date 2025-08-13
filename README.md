@@ -127,8 +127,8 @@ The server will typically run on http://localhost:yourPort.
 ## 📋 API Endpoints
 Here are some example API endpoints. Replace http://localhost:yourPortNumber/api/v1 with your actual base URL.
 
-### Authentication & Users
-* ```bash POST /api/v1/auth/register```
+### Users Management
+* ```bash POST /api/v1/user/register```
 
    * **Description:** Register a new user with email and password.
 
@@ -140,6 +140,24 @@ Here are some example API endpoints. Replace http://localhost:yourPortNumber/api
   "password": "StrongPassword123!"
 }
 ```
+* ```bash PATCH /api/v1/user/:id``` 
+
+  * **Description:** Update user details (requires authentication and authorization).
+
+  * **Body:** Partial<IUser> data.
+
+* ```bash GET /api/v1/user/all-users```
+
+  * **Description:** Get all users (Admin/Super Admin only).
+* ```bash GET /api/v1/user/:id```
+
+  * **Description:** Get single user with id (Admin/Super Admin only). 
+* ```bash DELETE /api/v1/user/:id```
+
+  * **Description:** delete single user with id (Admin/Super Admin only).   
+
+### Auth Management
+
 * ```bash POST /api/v1/auth/login```
 
    * **Description:** Log in a user with email and password.
@@ -159,7 +177,7 @@ Here are some example API endpoints. Replace http://localhost:yourPortNumber/api
 
   * **Description:** Google OAuth callback URL (handled by Passport.js).
 
-* ```bash PATCH /api/v1/users/reset-password```
+* ```bash PATCH /api/v1/auth/reset-password```
 
   * **Description:** Reset a user's password. (Requires authentication, send token in headers)
   * **Body:**
@@ -169,30 +187,21 @@ Here are some example API endpoints. Replace http://localhost:yourPortNumber/api
   "newPassword": "NewStrongPassword456!"
  }
 ```  
-* ```bash PATCH /api/v1/users/:id```
-
-  * **Description:** Update user details (requires authentication and authorization).
-
-  * **Body:** Partial<IUser> data.
-
-* ```bash GET /api/v1/users```
-
-  * **Description:** Get all users (Admin/Super Admin only).
 
 ### Parcel Management
-* ```bash POST /api/v1/parcels```
+* ```bash POST /api/v1/parcel/create```
 
 * **Description:** Create a new parcel delivery order.
 
 * **Body:** IParcel data (refer to parcel.interface.ts for structure).
 
-* ```bash GET /api/v1/parcels```
+* ```bash GET /api/v1/parcel/all-parcels```
 
 * **Description:** Get all parcels (filtered by user role).
 
-* ```bash GET /api/v1/parcels/:id```
+* ```bash GET /api/v1/parcels/:trackingNumber```
 
-* **Description:** Get a single parcel by ID.
+* **Description:** Get a single parcel by TrackingNumber.
 
 * ```bash PATCH /api/v1/parcels/:id```
 

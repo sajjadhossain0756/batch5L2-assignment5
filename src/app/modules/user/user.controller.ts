@@ -32,6 +32,20 @@ const getAllUsers = catchAsync(async (req: Request, res: Response, next: NextFun
 })
 
 // updateUser function
+const getSingleUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+
+    const user = await UserServices.getSingleUser(userId);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        message: `Get Single User Successfully`,
+        success: true,
+        data: user
+    })
+})
+
+// updateUser function
 const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.id;
     const verifiedToken = req.user;
@@ -66,6 +80,7 @@ const deleteUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 export const UserControllers = {
     createUser,
     getAllUsers,
+    getSingleUser,
     updateUser,
     deleteUser
 }

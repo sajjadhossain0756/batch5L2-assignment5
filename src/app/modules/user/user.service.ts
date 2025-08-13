@@ -44,6 +44,20 @@ const getAllUsers = async () => {
 }
 
 // update user start here;
+const getSingleUser = async (userId: string) => {
+
+    const isUserExist = await User.findById(userId);
+
+    if(!isUserExist){
+        throw new AppError(httpStatus.NOT_FOUND,"User not Found")
+    }
+
+    const getSingleUser = await User.findById(userId)
+
+    return getSingleUser;
+}
+
+// update user start here;
 const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
 
     const isUserExist = await User.findById(userId);
@@ -87,6 +101,7 @@ const deleteUser = async (id: string,loginUser: any) => {
 export const UserServices = {
     createUser,
     getAllUsers,
+    getSingleUser,
     updateUser,
     deleteUser
 }
